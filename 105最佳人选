@@ -1,0 +1,95 @@
+/*
+问题描述
+某特种部队采用了一套性格密码机制来筛选执行特定任务的最佳士兵，该机制规则如下：
+
+每个人的性格可以从 M 个维度来描述，每个维度分为 ABCDE 5 种类型；
+同一维度内字母距离越近，表示该维度性格类型差异越小，也就越匹配，比如：A和B的差异为1，A和D的差异为3，所以A和B的性格类型越匹配；
+其中 AE、BD、CE、BE 为不相容性格类型，可以认为他们的性格差异为正无穷大；
+如果两士兵性格密码在 M 个维度下性格类型差异值总和越小，就代表这两人性格越匹配，但是如果某一维度包含不相容性格类型，则表示两人性格密码完全不匹配。
+假如你是该特种部队的技术负责人，现在有一项重要的机密任务，需要在 N 个特种兵中，找到最匹配该任务的性格密码的人选，请你写一套算法帮助他们找到执行该任务的最佳人选。
+
+输入格式
+第一行输入 M (0 < M <= 100) 和 N (0 < N <= 1000)，M 和 N 用空格隔开，M 代表性格密码的维度，N 代表备选的特种兵个数；第二行输入执行该任务的最佳性格密码；接下来输入 N 行，每一行代表特种兵的 M 位性格密码。
+
+输出格式
+输出一个或多个最匹配的 M 位的性格密码；多个性格密码用换行隔开，并和输入顺序保持一致；如果没有合适人选输出 None。
+
+输入样例
+6 3
+ABCDEA
+AAAAAA
+BBBBBB
+ABDDEB
+输出样例
+ABDDEB
+
+解题思路：
+关键在于条件分析，这里使用if比较简单暴力
+在存储答案时，我选择建立一个vector的队列
+*/
+#include <iostream>
+#include <string>
+#include <vector>
+#include <limits>
+
+std::string solution(int m, int n, std::string target,
+                     std::vector<std::string> &array) {
+  int min_diff = std::numeric_limits<int>::max();
+  std::vector<std::string> result;
+
+  for (int i = 0; i < n; i++) {
+    int total_diff = 0;
+    bool incompatible = false;
+
+    for (int j = 0; j < m; j++) {
+      char target_char = target[j];
+      char soldier_char = array[i][j];
+
+      // Check for incompatible types
+      if ((target_char == 'A' && soldier_char == 'E') ||
+          (target_char == 'E' && soldier_char == 'A') ||
+          (target_char == 'B' && soldier_char == 'D') ||
+          (target_char == 'D' && soldier_char == 'B') ||
+          (target_char == 'C' && soldier_char == 'E') ||
+          (target_char == 'E' && soldier_char == 'C') ||
+          (target_char == 'B' && soldier_char == 'E') ||
+          (target_char == 'E' && soldier_char == 'B')) {
+        incompatible = true;
+        break;
+      }
+
+      // Calculate difference
+      int diff = std::abs(target_char - soldier_char);
+      total_diff += diff;
+    }
+
+    if (incompatible) continue;
+
+    if (total_diff < min_diff) {
+      min_diff = total_diff;
+      result.clear();
+      result.push_back(array[i]);
+    } else if (total_diff == min_diff) {
+      result.push_back(array[i]);
+    }
+  }
+
+  if (result.empty()) {
+    return "None";
+  } else {
+    std::string output;
+    for (size_t i = 0; i < result.size(); ++i) {
+      output += result[i];
+      if (i != result.size() - 1) {
+        output += " ";
+      }
+    }
+    return output;
+  }
+}
+
+int main() {
+  std::vector<std::string> matrix = {"AAAAAA", "BBBBBB", "ABDDEB"};
+  std::cout << solution(6, 3, "ABCDEA", matrix) << std::endl;
+  return 0;
+}
