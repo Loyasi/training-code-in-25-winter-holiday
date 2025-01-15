@@ -1,0 +1,59 @@
+/*
+问题描述
+小包非常喜欢吃甜点，他收到了一次性送来的 N 个甜点，每个甜点都有一个对应的喜爱值。
+但是这还不够！小包让小哥连续送来了 M 次相同的 N 个甜点，并将这些甜点首尾相接排成一排。
+现在，小包面前有 
+(N×M) 个排成一排的甜点，小包希望从中选择一段连续的甜点，使得这段甜点的总喜爱值最大化。
+注意：尽管小包喜欢甜食，但有些甜点可能不合口味，导致其喜爱值为负数。小包至少要选择一个甜点来满足他对甜点的贪心。
+输入参数
+整数 ( N )：表示每次送来的甜点数量。
+整数 ( M )：表示送来的次数。
+数组 data：长度为 ( N )，表示每个甜点的喜爱值。
+返回结果
+一个整数，表示在 N×M 个甜点中可以选择的连续甜点段的最大总喜爱值。
+测试样例
+样例1：
+
+输入：N = 5 ,M = 1 ,data = [1, 3, -9, 2, 4]
+输出：6
+解释：选择甜点 [2, 4]，最大总喜爱值为 6
+
+样例2：
+
+输入：N = 5 ,M = 3 ,data = [1, 3, -9, 2, 4]
+输出：11
+解释：排列后甜点为 [1, 3, -9, 2, 4, 1, 3, -9, 2, 4, 1, 3, -9, 2, 4]。
+选择 [2, 4, 1, 3, -9, 2, 4, 1, 3] 这段连续甜点，最大总喜爱值为 11。
+
+呵呵，这道题一开始根本没思路，问AI知道了kanade算法，然后自己去搜，发现其实不难，一个贪心算法
+其中有个小插曲，我设初始值为0，然后开始往数组加，结果遇到全是负数的数组，于是修改代码后如下，，，呵呵，，很暴力
+*/
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+int solution(int N, int M, std::vector<int> data) {
+    int currentsum=data[0];
+    int maxsum=currentsum;
+    for (int j = 1 ; j < N; j++) 
+    {
+        currentsum=std::max(currentsum+data[j],data[j]);
+        maxsum=std::max(maxsum,currentsum);
+    }
+    for (int i = 1; i < M; i++) 
+    {
+        for (int j = 0 ; j < N; j++) 
+        {
+            currentsum=std::max(currentsum+data[j],data[j]);
+            maxsum=std::max(maxsum,currentsum);
+        }
+    }
+    return maxsum;
+}
+
+int main() {
+    // Add your test cases here
+    std::cout << (solution(5, 1, {1, 3, -9, 2, 4}) == 6) << std::endl;
+    std::cout << (solution(5, 3, {1, 3, -9, 2, 4}) == 11) << std::endl;
+    return 0;
+}
