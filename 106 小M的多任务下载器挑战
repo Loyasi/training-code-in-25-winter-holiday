@@ -1,0 +1,53 @@
+/*
+问题描述
+小M的程序设计大作业是编写一个多任务下载器。在实现过程中，他遇到了一个问题：在一次下载过程中，总共有N个任务，每个任务会在第x秒开始，并持续y秒。小M需要知道，在同一时刻，最多有多少个任务正在同时下载，也就是计算出任务的最高并发数。
+
+n 表示任务的数量。
+array 是一个二维列表，每个元素为[x, y]，表示任务的开始时间和持续时间，其中：
+x 表示任务的开始时间；
+y 表示任务的持续时间。
+
+测试样例
+样例1：
+
+输入：n = 2 ,array = [[1, 2], [2, 3]]
+输出：2
+
+样例2：
+
+输入：n = 4 ,array = [[1, 2], [2, 3], [3, 5], [4, 3]]
+输出：3
+
+一开始不知道怎么表示时间线，问AI发现就是直接计算当前总和
+*/
+
+#include <algorithm>
+#include <iostream>
+#include <utility>
+#include <vector>
+
+int solution(int n, std::vector<std::vector<int>> array) {
+    // Edit your code here
+    std::vector<std::pair<int, int>>time;
+    for (int i = 0; i<n; i++) 
+    {
+        time.push_back({array[i][0],1});//tasks start
+        time.push_back({array[i][1]+array[i][0],-1});//tsaks end
+    }
+    std::sort(time.begin(),time.end());
+    int max_tasks=0;
+    int current_tasks=0;
+    for (const auto& curtime : time) {
+        current_tasks+=curtime.second;
+        max_tasks=std::max(max_tasks,current_tasks);
+    }
+    return max_tasks;
+}
+
+int main() {
+    // Add your test cases here
+    std::cout << (solution(2, {{1,2}, {2,3}}) == 2) << std::endl;
+    std::cout << (solution(4, {{1,2}, {2,3}, {3,5}, {4,3}}) == 3) << std::endl;
+
+    return 0;
+}
